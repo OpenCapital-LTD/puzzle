@@ -39,7 +39,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
   // Initialize grid with empty cells
   const grid: string[][] = Array(13)
     .fill(null)
-    .map(() => Array(16).fill(""));
+    .map(() => Array(17).fill(""));
 
   // Initialize word placements
   const placements: {
@@ -72,7 +72,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
   // Place first word horizontally in the middle
   const firstWord = sortedWords[0];
   const firstRow = Math.floor(13 / 2);
-  const firstCol = Math.floor((16 - firstWord.length) / 2);
+  const firstCol = Math.floor((17 - firstWord.length) / 2);
 
   for (let i = 0; i < firstWord.length; i++) {
     grid[firstRow][firstCol + i] = firstWord[i];
@@ -100,7 +100,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
   ) => {
     // Check if word fits in the grid
     if (direction === "across") {
-      if (col + word.length > 16) return false;
+      if (col + word.length > 17) return false;
     } else {
       if (row + word.length > 13) return false;
     }
@@ -115,7 +115,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
         currentRow < 0 ||
         currentRow >= 13 ||
         currentCol < 0 ||
-        currentCol >= 16
+        currentCol >= 17
       ) {
         return false;
       }
@@ -271,7 +271,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
       if (acrossCount < 7) {
         for (let row = 0; row < 13; row++) {
           if (placed) break;
-          for (let col = 0; col < 16 - word.length; col++) {
+          for (let col = 0; col < 17 - word.length; col++) {
             if (canPlaceWord(word, row, col, "across")) {
               // Place the word
               for (let k = 0; k < word.length; k++) {
@@ -295,7 +295,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
       }
       // Try to place vertically if we need more down words
       else if (downCount < 7) {
-        for (let col = 0; col < 16; col++) {
+        for (let col = 0; col < 17; col++) {
           if (placed) break;
           for (let row = 0; row < 13 - word.length; row++) {
             if (canPlaceWord(word, row, col, "down")) {
@@ -326,7 +326,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
   let clueNumber = 1;
   const numberedGrid = Array(13)
     .fill(null)
-    .map(() => Array(16).fill(0));
+    .map(() => Array(17).fill(0));
 
   placements.forEach((placement) => {
     const { row, col } = placement;
@@ -384,7 +384,7 @@ export default function CrosswordPuzzle() {
   const gridRefs = useRef<(HTMLInputElement | null)[][]>(
     Array(13)
       .fill(null)
-      .map(() => Array(16).fill(null))
+      .map(() => Array(17).fill(null))
   );
   useEffect(() => {
     // post('https://puzzle-gamma-lyart.vercel.app/api/v1').then((res:any)=>{
@@ -417,7 +417,7 @@ export default function CrosswordPuzzle() {
         const initialUserGrid = Array(13)
           .fill(null)
           .map((_, rowIndex) =>
-            Array(16)
+            Array(17)
               .fill(null)
               .map((_, colIndex) => (grid[rowIndex][colIndex] ? "" : " "))
           );
@@ -456,7 +456,7 @@ export default function CrosswordPuzzle() {
     let totalCells = 0;
 
     for (let row = 0; row < 13; row++) {
-      for (let col = 0; col < 16; col++) {
+      for (let col = 0; col < 17; col++) {
         if (solution[row][col]) {
           totalCells++;
           if (userGrid[row][col] != "") {
@@ -604,10 +604,10 @@ export default function CrosswordPuzzle() {
 
     if (dir === "across") {
       nextCol = col + 1;
-      while (nextCol < 16 && solution[nextRow][nextCol] === "") {
+      while (nextCol < 17 && solution[nextRow][nextCol] === "") {
         nextCol++;
       }
-      if (nextCol < 16) {
+      if (nextCol < 17) {
         setSelectedCell({ row: nextRow, col: nextCol });
         gridRefs.current[nextRow][nextCol]?.focus();
       }
@@ -702,7 +702,7 @@ export default function CrosswordPuzzle() {
     const initialUserGrid = Array(13)
       .fill(null)
       .map((_, rowIndex) =>
-        Array(16)
+        Array(17)
           .fill(null)
           .map((_, colIndex) => (solution[rowIndex][colIndex] ? "" : " "))
       );
@@ -723,7 +723,7 @@ export default function CrosswordPuzzle() {
     const newGrid = [...userGrid];
 
     for (let row = 0; row < 13; row++) {
-      for (let col = 0; col < 16; col++) {
+      for (let col = 0; col < 17; col++) {
         if (solution[row][col] && userGrid[row][col] !== "") {
           if (userGrid[row][col] !== solution[row][col]) {
             newGrid[row][col] = "";
@@ -871,7 +871,7 @@ export default function CrosswordPuzzle() {
               </div>
 
               <div
-                className="grid grid-cols-16 gap-0 mx-auto max-w-fit"
+                className="grid grid-cols-17 gap-0 mx-auto max-w-fit"
                 data-tour-id="profile"
               >
                 {userGrid.map((row, rowIndex) =>
