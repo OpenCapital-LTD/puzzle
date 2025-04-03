@@ -268,7 +268,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
       // This is a simplified approach - a real crossword generator would be more sophisticated
 
       // Try to place horizontally if we need more across words
-      if (acrossCount < 6) {
+      if (acrossCount < 5) {
         for (let row = 0; row < 13; row++) {
           if (placed) break;
           for (let col = 0; col < 16 - word.length; col++) {
@@ -294,7 +294,7 @@ const generateCrossword = (words: string[], clues: Record<string, string>) => {
         }
       }
       // Try to place vertically if we need more down words
-      else if (downCount < 6) {
+      else if (downCount < 5) {
         for (let col = 0; col < 16; col++) {
           if (placed) break;
           for (let row = 0; row < 13 - word.length; row++) {
