@@ -805,7 +805,7 @@ export default function CrosswordPuzzle() {
       {loading && <Loader />}
 
       {(!hasPlayed ||
-        ["Shellton Omondi", "Sandie Kampaire"].includes(user)) && (
+        ["Shellton Omondi", "Sandra Kyampaire"].includes(user)) && (
         <div
           className="flex flex-col md:flex-row gap-6"
           data-tour-id="dashboard"

@@ -9,7 +9,7 @@ import useAxios from "./hooks/useAxios";
 
 
 // TO-DO: encrypt player
-const admins = ['Shellton Omondi','Sandra Kampaire']
+const admins = ['Shellton Omondi','Sandra Kyampaire']
 function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPortal, setShowPortal] = useState(false);
