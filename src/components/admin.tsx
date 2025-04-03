@@ -58,7 +58,8 @@ export default function AdminPage({
   const [wordPuzzle, setWordPuzzle] = useState("");
   const [hint, setHint] = useState("");
   const { post, get, loading } = useAxios(
-    "https://puzzle-gamma-lyart.vercel.app/api"
+    "https://vercel-functions-eta.vercel.app/api"
+
   );
 
   const [words, setWords] = useState<any[]>([]);

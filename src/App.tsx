@@ -10,7 +10,6 @@ import { MenuIcon } from "lucide-react";
 import ThemeRoutes from './routes'; // ✅ this is fine
 
 // TO-DO: encrypt player
-const admins = ['Shellton Omondi', 'Sandra Kampaire']
 // function App() {
 //   const [isAdmin, setIsAdmin] = useState(false);
 //   const [showPortal, setShowPortal] = useState(false);

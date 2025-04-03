@@ -367,9 +367,19 @@ export default function CrosswordPuzzle() {
   const [score, setScore] = useState(0);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [myScored, setMyScore] = useState();
+  const [user, setUser] = useState("");
   const { get, post, loading } = useAxios(
-    "https://puzzle-gamma-lyart.vercel.app/api"
+    "https://vercel-functions-eta.vercel.app/api"
   );
+  function formatSecondsToMinutes(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    const paddedMins = mins.toString().padStart(2, "0");
+    const paddedSecs = secs.toString().padStart(2, "0");
+
+    return `${paddedMins}:${paddedSecs}`;
+  }
 
   const gridRefs = useRef<(HTMLInputElement | null)[][]>(
     Array(13)
@@ -420,10 +430,12 @@ export default function CrosswordPuzzle() {
 
   useEffect(() => {
     let user = Cookies.get("user_id");
-    console.log('########################',puzzle)
-    get("/v1?r=g_rsu").then((res) => {
+    setUser(user || "")
+    console.log("########################", puzzle);
+    get(`/v1?r=g_rsu&p=${puzzle}&u=${user}`).then((res) => {
       if (res.length > 0) {
         setHasPlayed(true);
+        setMyScore(res[0]);
       }
     });
     return setCompleted(false);
@@ -792,7 +804,7 @@ export default function CrosswordPuzzle() {
       {/* <Confetti/> */}
       {loading && <Loader />}
 
-      {/* <div className="flex flex-col md:flex-row gap-6" data-tour-id="dashboard">
+      {(!hasPlayed || ['Shellton Omondi', 'Sandie Kampaire'].includes(user)) && <div className="flex flex-col md:flex-row gap-6" data-tour-id="dashboard">
         <div className="flex-1">
           <Card className="p-4">
             <div className="flex justify-between items-center mb-4 ">
@@ -832,6 +844,7 @@ export default function CrosswordPuzzle() {
                   size="sm"
                   variant="outline"
                   onClick={resetPuzzle}
+                  disabled={completed}
                 >
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Reset
@@ -987,15 +1000,16 @@ export default function CrosswordPuzzle() {
             </div>
           </Card>
         </div>
-      </div> */}
+      </div>}
 
-      <div>
+      {hasPlayed && <div>
         <Button variant={"outline"} className="p-15">
           You already completed this puzzle, see you in the next!
           <br />
-          Your score was : 50%, Your time was : 50
+          Your score was : {(myScored as any)?.score || 0}%, Your time was :{" "}
+          {formatSecondsToMinutes((myScored as any)?.time || 0)}
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }
