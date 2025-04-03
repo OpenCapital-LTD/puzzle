@@ -53,6 +53,7 @@ export default function AdminPage({
   const [puzzleDescription, setPuzzleDescription] = useState("");
   const [puzzleCategroy, setPuzzleCategory] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [tab, setTab] = useState("puzzle");
 
   const [wordPuzzle, setWordPuzzle] = useState("");
   const [hint, setHint] = useState("");
@@ -127,7 +128,7 @@ export default function AdminPage({
     if (!newWord.word || !newWord.hint || !wordPuzzle)
       return alert("missing fields");
 
-    console.log(newWord)
+    console.log(newWord);
     post("/v1?r=p_wds", {
       word: newWord.word,
       hint: newWord.hint,
@@ -140,6 +141,7 @@ export default function AdminPage({
 
         setWords([...words, { id: words.length + 1, ...newWord }]);
         setNewWord({ word: "", hint: "", category: "" });
+        setRefresh(true)
       })
       .catch((err) => {
         console.log(err);
@@ -148,48 +150,67 @@ export default function AdminPage({
   };
   return (
     <div className="container mx-auto py-10">
-      {loading && <Loader/>}
-      <div className="flex justify-between items-center mb-8">
+      {loading && <Loader />}
+      <div className="flex justify-between items-center mb-[18%]">
         <div>
           <h1 className="text-3xl font-bold">Puzzle Admin Dashboard</h1>
-          <p className="text-muted-foreground">
-            Create and manage word puzzles
-          </p>
+          <p className="text-muted-foreground"></p>
         </div>
-        <Button className="bg-[#276D8D]" onClick={adminCallback}>
-          <PlusCircle className="mr-2 h-4 w-4" />
+
+        <Button className="bg-[#276D8D] text-white" onClick={adminCallback}>
+          <PlusCircle className="mr-2 h-4 w-4 text-white" />
           Close Portal
         </Button>
       </div>
-
-      <Tabs defaultValue="puzzles" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="puzzles">
+      <br />
+      <br />
+      <div defaultValue="puzzles" className="space-y-4">
+        <div
+          className="flex items-center justify-between mb-5"
+          style={{
+            width: "35%",
+            marginBottom: "1%",
+          }}
+        >
+          <Button
+            className="flex"
+            variant={"outline"}
+            onClick={() => {
+              setTab("puzzle");
+            }}
+          >
             <PuzzleIcon className="mr-2 h-4 w-4" />
-            Puzzles
-          </TabsTrigger>
-          <TabsTrigger value="words">
+            <p>Puzzles</p>
+          </Button>
+          <Button
+            className="flex"
+            variant={"outline"}
+            onClick={() => {
+              setTab("word");
+            }}
+          >
             <FileText className="mr-2 h-4 w-4" />
-            Words
-          </TabsTrigger>
-          <TabsTrigger value="results">
+            <p>Words</p>
+          </Button>
+          <Button
+            className="flex"
+            variant={"outline"}
+            onClick={() => alert("comming soon")}
+          >
             <BarChart3 className="mr-2 h-4 w-4" />
-            Results
-          </TabsTrigger>
-        </TabsList>
+            <p>Results</p>
+          </Button>
+        </div>
 
-        <TabsContent value="puzzles" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Puzzle</CardTitle>
-              <CardDescription>
-                Set up a new word puzzle for your users
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {tab === "puzzle" && (
+          <div className="puzzle">
+            <Card className="p-5">
+              <h4>Add Puzzle</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Puzzle Title</Label>
+                <div className="">
+                  <label htmlFor="title" className="text-right w-[100%]">
+                    Puzzle Title
+                  </label>
                   <Input
                     id="title"
                     placeholder="Enter puzzle title"
@@ -200,27 +221,22 @@ export default function AdminPage({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty</Label>
-                  <Select
+                  <label htmlFor="difficulty">Difficulty</label>
+                  <select
                     value={puzzleDifficulty}
-                    onValueChange={(e) => {
-                      setPuzzleDifficulty(e);
+                    onChange={(e) => {
+                      setPuzzleDifficulty(e.target.value);
                     }}
                   >
-                    <SelectTrigger id="difficulty">
-                      <SelectValue placeholder="Select difficulty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">~ select ~</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="title">Puzzle Category</Label>
+                <label htmlFor="title">Puzzle Category</label>
                 <Input
                   id="category"
                   placeholder="Enter puzzle category"
@@ -231,7 +247,7 @@ export default function AdminPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <label htmlFor="description">Description</label>
                 <Textarea
                   id="description"
                   placeholder="Enter puzzle description"
@@ -242,115 +258,108 @@ export default function AdminPage({
                 />
               </div>
               <Button
-                className="w-full bg-[#4B4B4B]"
+                className="w-full bg-[#4B4B4B] text-white"
                 onClick={() => {
                   handleSavePuzzle();
                 }}
                 disabled={loading}
               >
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 h-4 w-4 text-white" />
                 Save Puzzle
               </Button>
-            </CardContent>
-          </Card>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Existing Puzzles</CardTitle>
-              <CardDescription>
-                Manage your existing word puzzles
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Difficulty</TableHead>
-                    <TableHead>Words</TableHead>
-                    <TableHead>Completions</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {puzzles.map((puzzle: any) => (
-                    <TableRow key={puzzle.id}>
-                      <TableCell className="font-medium">
-                        {puzzle.name}
-                      </TableCell>
-                      <TableCell>{puzzle.description}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={`${
-                            puzzle.difficulty === "easy"
-                              ? "bg-[#D5D8DC]"
-                              : puzzle.difficulty === "medium"
-                              ? "bg-[#3088AF]"
-                              : "bg-[#C47B10]"
-                          }`}
-                        >
-                          {puzzle.difficulty}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{puzzle.wordCount}</TableCell>
-                      <TableCell>{puzzle.completions}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedPuzzle(puzzle as any)}
-                          >
-                            Edit
-                          </Button>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+            <Card style={{
+              marginTop:'10px'
+            }}>
+              <CardHeader>
+                <CardTitle>Existing Puzzles</CardTitle>
+                <CardDescription>
+                  Manage your existing word puzzles
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Difficulty</TableHead>
+                      <TableHead>Words</TableHead>
+                      <TableHead>Completions</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="words" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add Words to Puzzle</CardTitle>
-              <CardDescription>
-                Create words for your selected puzzle
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="puzzle-select">Select Puzzle</Label>
-                <Select
-                value={wordPuzzle}
-                  onValueChange={(e) => {
-                    setWordPuzzle(e);
-                  }}
-                >
-                  <SelectTrigger id="puzzle-select">
-                    <SelectValue placeholder="Select a puzzle" />
-                  </SelectTrigger>
-                  <SelectContent>
+                  </TableHeader>
+                  <TableBody>
                     {puzzles.map((puzzle: any) => (
-                      <SelectItem key={puzzle.name} value={puzzle.name.toString()}>
-                        {puzzle.name}
-                      </SelectItem>
+                      <TableRow key={puzzle.id}>
+                        <TableCell className="font-medium">
+                          {puzzle.name}
+                        </TableCell>
+                        <TableCell>{puzzle.description}</TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${
+                              puzzle.difficulty === "easy"
+                                ? "bg-[#D5D8DC]"
+                                : puzzle.difficulty === "medium"
+                                ? "bg-[#3088AF]"
+                                : "bg-[#C47B10]"
+                            }`}
+                          >
+                            {puzzle.difficulty}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{puzzle.wordCount}</TableCell>
+                        <TableCell>{puzzle.completions}</TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedPuzzle(puzzle as any)}
+                            >
+                              Edit
+                            </Button>
+                            <Button variant="destructive" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {tab == "word" && (
+          <div className="word">
+            <Card className="p-4">
+              <div className="space-y-2">
+                <label htmlFor="puzzle-select">Select Puzzle</label>
+                <select
+                  value={wordPuzzle}
+                  onChange={(e) => setWordPuzzle(e.target.value)}
+                  className="border rounded px-2 py-1" // optional styling
+                >
+                  <option key={'default'} value="" selected>
+                    ~ select puzzle ~
+                  </option>
+                  {puzzles?.map((puzzle: any) => (
+                    <option key={puzzle.name} value={puzzle.name.toString()}>
+                      {puzzle.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="border rounded-md p-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="space-y-2">
-                    <Label htmlFor="word">Word</Label>
+                    <label htmlFor="word">Word</label>
                     <Input
                       id="word"
                       placeholder="Enter word"
@@ -361,7 +370,7 @@ export default function AdminPage({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="hint">Hint</Label>
+                    <label htmlFor="hint">Hint</label>
                     <Input
                       id="hint"
                       placeholder="Enter hint"
@@ -383,7 +392,16 @@ export default function AdminPage({
                     />
                   </div> */}
                 </div>
-                <Button onClick={handleAddWord} disabled={loading}>
+                <div className=""></div>
+                <Button
+                  onClick={handleAddWord}
+                  disabled={loading}
+                  variant={"outline"}
+                  className="w-[100%] mt-5"
+                  style={{
+                    marginTop: "20px",
+                  }}
+                >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Word
                 </Button>
@@ -391,11 +409,17 @@ export default function AdminPage({
 
               <div className="border rounded-md p-4">
                 <h3 className="text-lg font-medium mb-4">Word List</h3>
-                <div className="space-y-2">
+                <div className="space-y-2" style={{
+                  overflow:'scroll',
+                  maxHeight:'400px'
+                }}>
                   {words.map((word) => (
                     <div
                       key={word.id}
-                      className="flex items-center justify-between p-3 border rounded-md"
+                      className="flex items-center justify-between p-3 border rounded-md mt-[5px]"
+                      style={{
+                        marginTop:'10px'
+                      }}
                     >
                       <div>
                         <p className="font-medium">{word.word}</p>
@@ -419,105 +443,10 @@ export default function AdminPage({
                   ))}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="results" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Puzzle Results</CardTitle>
-              <CardDescription>
-                View statistics and results for your puzzles
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total Completions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">435</div>
-                    <p className="text-xs text-muted-foreground">
-                      +22% from last month
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Average Completion Time
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">3m 42s</div>
-                    <p className="text-xs text-muted-foreground">
-                      -18s from last month
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Success Rate
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">78%</div>
-                    <p className="text-xs text-muted-foreground">
-                      +5% from last month
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Puzzle</TableHead>
-                    <TableHead>Completions</TableHead>
-                    <TableHead>Avg. Time</TableHead>
-                    <TableHead>Success Rate</TableHead>
-                    <TableHead>Most Missed Word</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Animal Kingdom
-                    </TableCell>
-                    <TableCell>145</TableCell>
-                    <TableCell>2m 58s</TableCell>
-                    <TableCell>82%</TableCell>
-                    <TableCell>platypus</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Space Exploration
-                    </TableCell>
-                    <TableCell>87</TableCell>
-                    <TableCell>4m 12s</TableCell>
-                    <TableCell>65%</TableCell>
-                    <TableCell>nebula</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">
-                      Food & Cuisine
-                    </TableCell>
-                    <TableCell>203</TableCell>
-                    <TableCell>3m 05s</TableCell>
-                    <TableCell>89%</TableCell>
-                    <TableCell>quinoa</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

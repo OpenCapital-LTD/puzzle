@@ -33,7 +33,6 @@ module.exports = {
             name: 'fe_oca_puzzle',
             filename: 'remoteEntry.js', // Name of the remote entry file
             exposes: {
-                './src': './src/testComponent.js',
                 './oca_puzzle':'./src/App.tsx'
             },
             remotes: {

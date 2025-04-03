@@ -104,6 +104,22 @@ export default async function handler(req, res) {
         });
       }
       break
+    case 'g_rsu':
+  const {p,u} = req.query
+
+      try {
+        const connection = await mysql.createConnection(dbUrl);
+        const [rows] = await connection.execute('SELECT * FROM Results WHERE puzzle=? AND name=?', {p,u});
+        await connection.end();
+        res.status(200).json(rows);
+
+      } catch (error) {
+        console.error('DB Error:', error);
+        res.status(500).json({
+          error: 'DB connection failed'
+        });
+      }
+      break
     case 'p_pz':
       try {
         const {
@@ -225,7 +241,7 @@ export default async function handler(req, res) {
           total,
           date
           )
-          VALUES (?,?,?,?,?,?,?,?,?,?)`, [v4(),name, puzzle, hints_taken, resets, time,score, correct,total, date]);
+          VALUES (?,?,?,?,?,?,?,?,?,?)`, [v4(), name, puzzle, hints_taken, resets, time, score, correct, total, date]);
         await connection.end();
         res.status(200).json(rows);
 

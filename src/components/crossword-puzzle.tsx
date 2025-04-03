@@ -10,6 +10,7 @@ import { Timer } from "@/components/timer";
 import { HelpCircle, RefreshCw, CheckCircle } from "lucide-react";
 import useAxios from "./hooks/useAxios";
 import Loader from "./loader";
+import Cookies from "js-cookie";
 
 // Sample words array - replace with your own 15 words
 const WORDS_ARRAY = [
@@ -363,6 +364,9 @@ export default function CrosswordPuzzle() {
   const [timerActive, setTimerActive] = useState(false);
   const [puzzle, setPuzzle] = useState("");
   const [resetCount, setResetCount] = useState(0);
+  const [score, setScore] = useState(0);
+  const [hasPlayed, setHasPlayed] = useState(false);
+  const [myScored, setMyScore] = useState();
   const { get, post, loading } = useAxios(
     "https://puzzle-gamma-lyart.vercel.app/api"
   );
@@ -389,7 +393,7 @@ export default function CrosswordPuzzle() {
         res?.map((res: any) => {
           c[res.word.toUpperCase()] = res.hint;
         });
-        console.log('puzzle name',res[0].name)
+        console.log("puzzle name", res[0].name);
         setPuzzle(res[0].name);
         const { grid, placements, numberedGrid } = generateCrossword(
           res?.map((l: any) => l.word.toUpperCase()),
@@ -414,6 +418,15 @@ export default function CrosswordPuzzle() {
       });
   }, []);
 
+  useEffect(() => {
+    let user = Cookies.get("user_id");
+    get(`/v1?r=g_rsu&p=${puzzle}&u=${user}`).then((res) => {
+      if (res.length > 0) {
+        setHasPlayed(true);
+      }
+    });
+    return setCompleted(false);
+  }, [completed]);
   // Start the game when user interacts with the grid
   useEffect(() => {
     if (selectedCell && !gameStarted) {
@@ -441,7 +454,10 @@ export default function CrosswordPuzzle() {
     }
 
     console.log(userGrid);
-    const newProgress = Math.floor((filledCells / totalCells) * 100);
+    // const newProgress = Math.floor((filledCells / totalCells) * 100);
+    const newProgress =
+      totalCells === 0 ? 0 : Math.floor((filledCells / totalCells) * 100);
+
     setProgress(newProgress);
 
     // Check if puzzle is completed
@@ -455,7 +471,7 @@ export default function CrosswordPuzzle() {
         });
       });
       let score = Math.floor((correct / totalCells) * 100);
-      let user = localStorage.getItem("player");
+      let user = Cookies.get("user_id");
       console.log("correct answers :: ", correct);
       console.log("correct answers :: ", hintsUsed);
       console.log("correct answers :: ", user);
@@ -465,7 +481,7 @@ export default function CrosswordPuzzle() {
       console.log("correct answers :: ", score);
       console.log("correct answers :: ", totalCells);
       console.log("correct answers :: ", new Date());
-
+      setScore(score);
       post("/v1?r=p_rs", {
         name: user,
         puzzle,
@@ -475,7 +491,7 @@ export default function CrosswordPuzzle() {
         correct,
         total: totalCells,
         score,
-        date: (new Date()).toUTCString(),
+        date: new Date().toUTCString(),
       })
         .then((res) => {
           alert("You have finished this puzzle");
@@ -772,9 +788,10 @@ export default function CrosswordPuzzle() {
   return (
     <div className="w-full max-w-6xl mx-auto">
       {showConfetti && <Confetti />}
+      {/* <Confetti/> */}
       {loading && <Loader />}
 
-      <div className="flex flex-col md:flex-row gap-6" data-tour-id="dashboard">
+      {/* <div className="flex flex-col md:flex-row gap-6" data-tour-id="dashboard">
         <div className="flex-1">
           <Card className="p-4">
             <div className="flex justify-between items-center mb-4 ">
@@ -822,7 +839,7 @@ export default function CrosswordPuzzle() {
             </div>
 
             <div className="mb-0" data-tour-id="settings">
-              <Progress value={progress} className="h-2" />
+              <Progress  value={progress}/>
               <div className="text-xs text-right mt-1">
                 {progress}% completed
               </div>
@@ -917,7 +934,7 @@ export default function CrosswordPuzzle() {
                 <p className="text-green-700">
                   You completed the puzzle in {Math.floor(elapsedTime / 60)}:
                   {(elapsedTime % 60).toString().padStart(2, "0")} with{" "}
-                  {hintsUsed} hints used.
+                  {hintsUsed} hints used, and scored {score}%.
                 </p>
               </div>
             )}
@@ -969,6 +986,14 @@ export default function CrosswordPuzzle() {
             </div>
           </Card>
         </div>
+      </div> */}
+
+      <div>
+        <Button variant={"outline"} className="p-15">
+          You already completed this puzzle, see you in the next!
+          <br />
+          Your score was : 50%, Your time was : 50
+        </Button>
       </div>
     </div>
   );
