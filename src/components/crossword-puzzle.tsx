@@ -432,7 +432,7 @@ export default function CrosswordPuzzle() {
     let user = Cookies.get("user_id");
     setUser(user || "");
     console.log("########################", puzzle);
-    get(`/v1?r=g_rsu&p=${puzzle}&u=${user}`).then((res) => {
+    get(`/v1?r=g_rsu&p=${encodeURIComponent(puzzle)}&u=${encodeURIComponent(user || "")}`).then((res) => {
       if (res.length > 0) {
         setHasPlayed(true);
         setMyScore(res[0]);
