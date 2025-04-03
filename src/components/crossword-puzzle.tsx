@@ -420,13 +420,14 @@ export default function CrosswordPuzzle() {
 
   useEffect(() => {
     let user = Cookies.get("user_id");
-    get(`/v1?r=g_rsu&p=${puzzle}&u=${user}`).then((res) => {
+    console.log('########################',puzzle)
+    get("/v1?r=g_rsu").then((res) => {
       if (res.length > 0) {
         setHasPlayed(true);
       }
     });
     return setCompleted(false);
-  }, [completed]);
+  }, [puzzle]);
   // Start the game when user interacts with the grid
   useEffect(() => {
     if (selectedCell && !gameStarted) {

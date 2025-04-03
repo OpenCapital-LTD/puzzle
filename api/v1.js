@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   const {
     r
   } = req.query
-  console.log(dbT)
+  console.log('###################',r)
 
   switch (r) {
     case 'g_pz':
@@ -105,11 +105,16 @@ export default async function handler(req, res) {
       }
       break
     case 'g_rsu':
-  const {p,u} = req.query
+      const {
+        p, u
+      } = req.query
 
       try {
         const connection = await mysql.createConnection(dbUrl);
-        const [rows] = await connection.execute('SELECT * FROM Results WHERE puzzle=? AND name=?', {p,u});
+        const [rows] = await connection.execute('SELECT * FROM Results WHERE puzzle=? AND name=?', {
+          p,
+          u
+        });
         await connection.end();
         res.status(200).json(rows);
 
