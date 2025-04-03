@@ -364,7 +364,7 @@ export default function CrosswordPuzzle() {
   const [timerActive, setTimerActive] = useState(false);
   const [puzzle, setPuzzle] = useState("");
   const [resetCount, setResetCount] = useState(0);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(91);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [myScored, setMyScore] = useState();
   const [user, setUser] = useState("");
@@ -430,7 +430,7 @@ export default function CrosswordPuzzle() {
 
   useEffect(() => {
     let user = Cookies.get("user_id");
-    setUser(user || "")
+    setUser(user || "");
     console.log("########################", puzzle);
     get(`/v1?r=g_rsu&p=${puzzle}&u=${user}`).then((res) => {
       if (res.length > 0) {
@@ -511,7 +511,7 @@ export default function CrosswordPuzzle() {
 
           setCompleted(true);
           setTimerActive(false);
-          setShowConfetti(true);
+          if (score > 90) setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 6000);
         })
         .catch((err) => {
@@ -804,121 +804,126 @@ export default function CrosswordPuzzle() {
       {/* <Confetti/> */}
       {loading && <Loader />}
 
-      {(!hasPlayed || ['Shellton Omondi', 'Sandie Kampaire'].includes(user)) && <div className="flex flex-col md:flex-row gap-6" data-tour-id="dashboard">
-        <div className="flex-1">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4 ">
-              <div className="flex items-center gap-2">
-                <Timer
-                  active={timerActive}
-                  elapsedTime={elapsedTime}
-                  setElapsedTime={setElapsedTime}
-                />
-                <Badge variant="outline" className="ml-2" data-tour-id="hint">
-                  Hints: {5 - hintsUsed}
-                </Badge>
+      {(!hasPlayed ||
+        ["Shellton Omondi", "Sandie Kampaire"].includes(user)) && (
+        <div
+          className="flex flex-col md:flex-row gap-6"
+          data-tour-id="dashboard"
+        >
+          <div className="flex-1">
+            <Card className="p-4">
+              <div className="flex justify-between items-center mb-4 ">
+                <div className="flex items-center gap-2">
+                  <Timer
+                    active={timerActive}
+                    elapsedTime={elapsedTime}
+                    setElapsedTime={setElapsedTime}
+                  />
+                  <Badge variant="outline" className="ml-2" data-tour-id="hint">
+                    Hints: {5 - hintsUsed}
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    data-tour-id="hintbutton"
+                    size="sm"
+                    variant="outline"
+                    onClick={useHint}
+                    disabled={completed || hintsUsed > 4}
+                  >
+                    <HelpCircle className="h-4 w-4 mr-1" />
+                    Hint
+                  </Button>
+                  <Button
+                    data-tour-id="check"
+                    size="sm"
+                    variant="outline"
+                    onClick={checkPuzzle}
+                    disabled={completed}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Check
+                  </Button>
+                  <Button
+                    data-tour-id="reset"
+                    size="sm"
+                    variant="outline"
+                    onClick={resetPuzzle}
+                    disabled={completed}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                    Reset
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  data-tour-id="hintbutton"
-                  size="sm"
-                  variant="outline"
-                  onClick={useHint}
-                  disabled={completed || hintsUsed > 4}
-                >
-                  <HelpCircle className="h-4 w-4 mr-1" />
-                  Hint
-                </Button>
-                <Button
-                  data-tour-id="check"
-                  size="sm"
-                  variant="outline"
-                  onClick={checkPuzzle}
-                  disabled={completed}
-                >
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  Check
-                </Button>
-                <Button
-                  data-tour-id="reset"
-                  size="sm"
-                  variant="outline"
-                  onClick={resetPuzzle}
-                  disabled={completed}
-                >
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  Reset
-                </Button>
+
+              <div className="mb-0" data-tour-id="settings">
+                <Progress value={progress} />
+                <div className="text-xs text-right mt-1">
+                  {progress}% completed
+                </div>
               </div>
-            </div>
-
-            <div className="mb-0" data-tour-id="settings">
-              <Progress  value={progress}/>
-              <div className="text-xs text-right mt-1">
-                {progress}% completed
+              <div
+                data-tour-id="direction"
+                className="mt-[-4%] mb-4 text-xs text-left w-[fit-content]"
+              >
+                Direction : {direction}
               </div>
-            </div>
-            <div
-              data-tour-id="direction"
-              className="mt-[-4%] mb-4 text-xs text-left w-[fit-content]"
-            >
-              Direction : {direction}
-            </div>
 
-            <div
-              className="grid grid-cols-17 gap-0 mx-auto max-w-fit"
-              data-tour-id="profile"
-            >
-              {userGrid.map((row, rowIndex) =>
-                row.map((cell, colIndex) => {
-                  const isBlackCell = solution[rowIndex]?.[colIndex] === "";
-                  const isSelected =
-                    selectedCell?.row === rowIndex &&
-                    selectedCell?.col === colIndex;
-                  const isHighlighted = highlightedCells.some(
-                    (c) => c.row === rowIndex && c.col === colIndex
-                  );
-                  const cellNumber = numberedGrid[rowIndex]?.[colIndex] || -1;
+              <div
+                className="grid grid-cols-17 gap-0 mx-auto max-w-fit"
+                data-tour-id="profile"
+              >
+                {userGrid.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => {
+                    const isBlackCell = solution[rowIndex]?.[colIndex] === "";
+                    const isSelected =
+                      selectedCell?.row === rowIndex &&
+                      selectedCell?.col === colIndex;
+                    const isHighlighted = highlightedCells.some(
+                      (c) => c.row === rowIndex && c.col === colIndex
+                    );
+                    const cellNumber = numberedGrid[rowIndex]?.[colIndex] || -1;
 
-                  return (
-                    <div
-                      key={`${rowIndex}-${colIndex}`}
-                      data-tour-id={!isBlackCell ? "row" : ""}
-                      className={`
+                    return (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        data-tour-id={!isBlackCell ? "row" : ""}
+                        className={`
                         relative w-8 h-8 border border-gray-300 flex items-center justify-center
                         ${isBlackCell ? "bg-black" : "bg-white"}
                         ${isSelected ? "bg-blue-200" : ""}
                         ${isHighlighted && !isSelected ? "bg-blue-100" : ""}
                       `}
-                      style={{
-                        backgroundColor: isBlackCell ? "#2D3E50" : "white",
-                      }}
-                      onClick={() =>
-                        !isBlackCell && handleCellClick(rowIndex, colIndex)
-                      }
-                    >
-                      {cellNumber > 0 && (
-                        <span className="absolute top-0 left-0.5 text-[8px] font-bold">
-                          {cellNumber}
-                        </span>
-                      )}
-                      {!isBlackCell && (
-                        <input
-                          ref={(el) => {
-                            if (gridRefs.current) {
-                              gridRefs.current[rowIndex][colIndex] = el;
+                        style={{
+                          backgroundColor: isBlackCell ? "#2D3E50" : "white",
+                        }}
+                        onClick={() =>
+                          !isBlackCell && handleCellClick(rowIndex, colIndex)
+                        }
+                      >
+                        {cellNumber > 0 && (
+                          <span className="absolute top-0 left-0.5 text-[8px] font-bold">
+                            {cellNumber}
+                          </span>
+                        )}
+                        {!isBlackCell && (
+                          <input
+                            ref={(el) => {
+                              if (gridRefs.current) {
+                                gridRefs.current[rowIndex][colIndex] = el;
+                              }
+                            }}
+                            type="text"
+                            maxLength={1}
+                            value={cell}
+                            onChange={(e) =>
+                              handleInputChange(e, rowIndex, colIndex)
                             }
-                          }}
-                          type="text"
-                          maxLength={1}
-                          value={cell}
-                          onChange={(e) =>
-                            handleInputChange(e, rowIndex, colIndex)
-                          }
-                          onKeyDown={(e) =>
-                            handleKeyDown(e, rowIndex, colIndex)
-                          }
-                          className={`
+                            onKeyDown={(e) =>
+                              handleKeyDown(e, rowIndex, colIndex)
+                            }
+                            className={`
                             w-full h-full text-center font-bold uppercase bg-transparent
                             focus:outline-none
                             ${
@@ -931,85 +936,117 @@ export default function CrosswordPuzzle() {
                                 : ""
                             }
                           `}
-                          disabled={completed}
-                        />
-                      )}
-                    </div>
-                  );
-                })
+                            disabled={completed}
+                          />
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {completed && (
+                <div
+                  className={`mt-4 p-4 ${
+                    score > 90
+                      ? "bg-green-100"
+                      : score > 40
+                      ? "bg-green-100"
+                      : "bg-red-100"
+                  } rounded-lg text-center`}
+                >
+                  <h3
+                    className={`text-xl font-bold ${
+                      score > 90
+                        ? "text-green-700"
+                        : score > 40
+                        ? "text-green-700"
+                        : "text-red-700"
+                    }`}
+                  >
+                    {score > 90
+                      ? "Congratulations!"
+                      : score > 40
+                      ? "Good Job!"
+                      : "There's A Next Time!"}
+                  </h3>
+                  <p
+                    className={`${
+                      score > 90
+                        ? "text-green-700"
+                        : score > 40
+                        ? "text-green-700"
+                        : "text-red-700"
+                    }`}
+                  >
+                    You completed the puzzle in {Math.floor(elapsedTime / 60)}:
+                    {(elapsedTime % 60).toString().padStart(2, "0")} with{" "}
+                    {hintsUsed} hints used, and scored {score}%.
+                  </p>
+                </div>
               )}
-            </div>
+            </Card>
+          </div>
 
-            {completed && (
-              <div className="mt-4 p-4 bg-green-100 rounded-lg text-center">
-                <h3 className="text-xl font-bold text-green-800">
-                  Congratulations!
-                </h3>
-                <p className="text-green-700">
-                  You completed the puzzle in {Math.floor(elapsedTime / 60)}:
-                  {(elapsedTime % 60).toString().padStart(2, "0")} with{" "}
-                  {hintsUsed} hints used, and scored {score}%.
-                </p>
+          <div className="flex-1">
+            <Card className="p-4 h-full overflow-auto">
+              <div
+                data-tour-id="words"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div>
+                  <h3 className="text-lg font-bold mb-2">Across</h3>
+                  <ul className="space-y-2 text-left">
+                    {acrossClues.map((clue, index) => (
+                      <li
+                        key={`across-${index}`}
+                        className="text-sm cursor-pointer hover:bg-gray-100 p-1 rounded"
+                        onClick={() => {
+                          setSelectedCell({ row: clue.row, col: clue.col });
+                          setDirection("across");
+                          gridRefs.current[clue.row][clue.col]?.focus();
+                        }}
+                      >
+                        {clue.clue}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-2">Down</h3>
+                  <ul className="space-y-2 text-left">
+                    {downClues.map((clue, index) => (
+                      <li
+                        key={`down-${index}`}
+                        className="text-sm cursor-pointer hover:bg-gray-100 p-1 rounded"
+                        onClick={() => {
+                          setSelectedCell({ row: clue.row, col: clue.col });
+                          setDirection("down");
+                          gridRefs.current[clue.row][clue.col]?.focus();
+                        }}
+                      >
+                        {clue.clue}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            )}
-          </Card>
+            </Card>
+          </div>
         </div>
+      )}
 
-        <div className="flex-1">
-          <Card className="p-4 h-full overflow-auto">
-            <div
-              data-tour-id="words"
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
-            >
-              <div>
-                <h3 className="text-lg font-bold mb-2">Across</h3>
-                <ul className="space-y-2 text-left">
-                  {acrossClues.map((clue, index) => (
-                    <li
-                      key={`across-${index}`}
-                      className="text-sm cursor-pointer hover:bg-gray-100 p-1 rounded"
-                      onClick={() => {
-                        setSelectedCell({ row: clue.row, col: clue.col });
-                        setDirection("across");
-                        gridRefs.current[clue.row][clue.col]?.focus();
-                      }}
-                    >
-                      {clue.clue}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold mb-2">Down</h3>
-                <ul className="space-y-2 text-left">
-                  {downClues.map((clue, index) => (
-                    <li
-                      key={`down-${index}`}
-                      className="text-sm cursor-pointer hover:bg-gray-100 p-1 rounded"
-                      onClick={() => {
-                        setSelectedCell({ row: clue.row, col: clue.col });
-                        setDirection("down");
-                        gridRefs.current[clue.row][clue.col]?.focus();
-                      }}
-                    >
-                      {clue.clue}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </Card>
+      {hasPlayed && (
+        <div>
+          <Button variant={"outline"} className="p-15">
+            You already completed this puzzle, see you in the next!
+            <br />
+            Your score was : {(myScored as any)?.score || 0}%, Your time was :{" "}
+            {Math.floor(elapsedTime / 60)}:
+            {(elapsedTime % 60).toString().padStart(2, "0")}
+          </Button>
         </div>
-      </div>}
-
-      {hasPlayed && <div>
-        <Button variant={"outline"} className="p-15">
-          You already completed this puzzle, see you in the next!
-          <br />
-          Your score was : {(myScored as any)?.score || 0}%, Your time was :{" "}
-          {formatSecondsToMinutes((myScored as any)?.time || 0)}
-        </Button>
-      </div>}
+      )}
     </div>
   );
 }
