@@ -30,9 +30,13 @@ function Home() {
   return isAdmin ? (
     <AdminPage adminCallback={closePortal} />
   ) : (
-    <main className="flex  flex-col items-center justify-between p-4 md:p-24">
+    <main className="flex  flex-col items-center justify-between p-4 md:p-24" style={{
+        paddingTop:'0px'
+    }}>
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className=" text-4xl font-bold text-center mb-8">
+        <h1 className=" text-1xl font-bold text-center mb-8" style={{
+            fontSize:'30px'
+        }}>
           Crossword Challenge
         </h1>
         <br/>
