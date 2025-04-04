@@ -1042,8 +1042,8 @@ export default function CrosswordPuzzle() {
             You already completed this puzzle, see you in the next!
             <br />
             Your score was : {(myScored as any)?.score || 0}%, Your time was :{" "}
-            {Math.floor(elapsedTime / 60)}:
-            {(elapsedTime % 60).toString().padStart(2, "0")}
+            {Math.floor((myScored as any)?.time / 60)}:
+            {((myScored as any)?.time % 60).toString().padStart(2, "0")}
           </Button>
         </div>
       )}
